@@ -24,7 +24,6 @@ with st.sidebar:
         [
             "Normalización",
             "Discretización",
-            "Imputación de faltantes",
             "Árbol de decisión",
             "K-Means",
             "K-Modes (categórico)"
@@ -293,24 +292,6 @@ elif algo == "Discretización":
             return np.nan
         out[col + "_chi"] = out[col].apply(lambda v: asignar_bin(v, bins_chi))
         st.dataframe(out[[col, target, col + "_chi"]].head(200))
-
-elif algo == "Imputación de faltantes":
-    strategy = st.radio("Estrategia", ["Media", "Mediana", "Moda"], horizontal=True)
-    out = df.copy().replace(["", " ", "?"], np.nan)
-    num_cols = numeric_cols(out)
-    out[num_cols] = out[num_cols].apply(pd.to_numeric, errors="coerce")
-    if strategy == "Media":
-        for c in num_cols:
-            out[c] = out[c].fillna(out[c].mean())
-    elif strategy == "Mediana":
-        for c in num_cols:
-            out[c] = out[c].fillna(out[c].median())
-    else:
-        for c in out.columns:
-            moda = out[c].mode(dropna=True)
-            if len(moda) > 0:
-                out[c] = out[c].fillna(moda.iloc[0])
-    st.dataframe(out.head(200))
 
 elif algo == "Árbol de decisión":
     target = st.selectbox("Columna objetivo", df.columns)
